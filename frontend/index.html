@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Expense Tracker</h1>
+        <!-- Form to add expense -->
+        <div class="card shadow-sm p-4 mb-4">
+            <form id="expense-form">
+                <div class="mb-3">
+                    <label for="expense-name" class="form-label">Expense Name</label>
+                    <input type="text" class="form-control" id="expense-name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="expense-amount" class="form-label">Amount (₹)</label>
+                    <input type="number" min="1" class="form-control" id="expense-amount" required>
+                </div>
+                <div class="mb-3">
+                    <label for="expense-category" class="form-label">Category</label>
+                    <select class="form-select" id="expense-category">
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Add Expense</button>
+            </form>
+        </div>
+        <!-- Filter and Chart -->
+        <div class="card shadow-sm p-4 mb-4">
+            <div class="mb-3">
+                <label for="filter-category" class="form-label">Filter by Category</label>
+                <select class="form-select" id="filter-category">
+                    <option value="All">All</option>
+                    <option value="Food">Food</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <canvas id="expense-chart" height="100"></canvas>
+        </div>
+        <!-- Expense list -->
+        <div class="card shadow-sm p-4">
+            <h3>Expenses</h3>
+            <ul id="expense-list" class="list-group mb-3"></ul>
+            <h4>Total: ₹<span id="total-amount">0</span></h4>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

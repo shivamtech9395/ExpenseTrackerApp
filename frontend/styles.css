@@ -1,0 +1,30 @@
+
+/* styles.css */
+body {
+    background-color: #f8f9fa;
+}
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+.btn-danger {
+    padding: 5px 10px;
+}
+#expense-form {
+    max-width: 500px;
+    margin: auto;
+}
+#expense-list {
+    max-width: 500px;
+    margin: auto;
+}

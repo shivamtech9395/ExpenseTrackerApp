@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Teacher's Day Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-200 to-green-200 min-h-screen p-6">
+    <nav class="bg-white p-4 shadow-lg rounded-lg mb-6 animate__animated animate__fadeInDown">
+        <ul class="flex space-x-6 justify-center">
+            <li><a href="profile.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Profile</a></li>
+            <li><a href="dashboard.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Dashboard</a></li>
+            <li><a href="contest.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Contest</a></li>
+            <li><button onclick="logout()" class="text-red-600 font-semibold hover:text-red-800 transition transform hover:scale-110">Logout</button></li>
+        </ul>
+    </nav>
+    <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-lg mx-auto animate__animated animate__zoomIn">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-6">Your Dashboard</h1>
+        <div class="mb-8 bg-gray-100 p-6 rounded-lg shadow-inner">
+            <h2 class="text-xl font-semibold text-blue-600 mb-4">Contest Results</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <p class="text-lg"><strong>Questions Attempted:</strong> <span id="attempts" class="text-gray-700"></span></p>
+                <p class="text-lg"><strong>Correct:</strong> <span id="correct" class="text-green-600"></span></p>
+                <p class="text-lg"><strong>Wrong:</strong> <span id="wrong" class="text-red-600"></span></p>
+                <p class="text-lg"><strong>Percentage:</strong> <span id="percentage" class="text-gray-700"></span>%</p>
+                <p class="text-lg"><strong>Score:</strong> <span id="score" class="text-blue-600"></span>/5</p>
+            </div>
+        </div>
+        <div>
+            <h2 class="text-xl font-semibold text-blue-600 mb-4">Gift Box 🎁</h2>
+            <button id="openGift" class="bg-yellow-500 text-white p-4 rounded-lg hover:bg-yellow-600 transition transform hover:scale-105 animate__animated animate__pulse animate__infinite">Open Your Gift!</button>
+            <p id="prizeMessage" class="mt-6 text-xl font-semibold text-center hidden animate__animated animate__bounceIn"></p>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        const users = JSON.parse(localStorage.getItem('users'));
+        const userIndex = users.findIndex(u => u.email === currentUser.email);
+        const user = users[userIndex];
+
+        document.getElementById('attempts').textContent = user.attempts;
+        document.getElementById('correct').textContent = user.correct;
+        document.getElementById('wrong').textContent = user.wrong;
+        document.getElementById('percentage').textContent = user.percentage;
+        document.getElementById('score').textContent = user.score;
+
+        const prizes = JSON.parse(localStorage.getItem('prizes'));
+        document.getElementById('openGift').addEventListener('click', () => {
+            let prize = '';
+            if (user.score === 5) prize = prizes.first;
+            else if (user.score === 4) prize = prizes.second;
+            else if (user.score >= 3) prize = prizes.third;
+            const prizeMessage = document.getElementById('prizeMessage');
+            prizeMessage.textContent = prize ? `🎉 Congratulations! You win ${prize} 🏆` : '😔 Better luck next time!';
+            prizeMessage.classList.remove('hidden');
+        });
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

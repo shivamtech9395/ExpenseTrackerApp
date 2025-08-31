@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Teacher's Day Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen p-6" id="body">
+    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-lg transform transition-all hover:scale-105 animate__animated animate__fadeIn">
+        <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-8 animate__animated animate__pulse animate__infinite">Teacher's Day Contest</h1>
+        
+        <!-- Signup Form -->
+        <form id="signupForm" class="space-y-6">
+            <div>
+                <label for="name" class="block text-gray-700 font-semibold">Full Name</label>
+                <input type="text" id="name" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+            </div>
+            <div>
+                <label for="email" class="block text-gray-700 font-semibold">Email</label>
+                <input type="email" id="email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700 font-semibold">Password (4-digit)</label>
+                <input type="password" id="password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" maxlength="4" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">Sign Up / Login as New</button>
+        </form>
+        
+        <!-- Sign In Link -->
+        <p class="text-center mt-4">Already have an account? <button id="showSignIn" class="text-blue-600 font-semibold hover:underline">Sign In</button></p>
+        
+        <!-- Sign In Form -->
+        <form id="signinForm" class="hidden mt-6 space-y-6">
+            <div>
+                <label for="signinEmail" class="block text-gray-700 font-semibold">Email</label>
+                <input type="email" id="signinEmail" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+            </div>
+            <div>
+                <label for="signinPassword" class="block text-gray-700 font-semibold">Password (4-digit)</label>
+                <input type="password" id="signinPassword" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" maxlength="4" required>
+            </div>
+            <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition transform hover:scale-105">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        // Initialize Local Storage
+        if (!localStorage.getItem('users')) localStorage.setItem('users', JSON.stringify([]));
+        if (!localStorage.getItem('admins')) localStorage.setItem('admins', JSON.stringify([
+            {name: 'Admin1', email: 'admin1@example.com', password: '1234'},
+            {name: 'Admin2', email: 'admin2@example.com', password: '1234'}
+        ]));
+        if (!localStorage.getItem('prizes')) localStorage.setItem('prizes', JSON.stringify({first: 'Gold Medal', second: 'Silver Medal', third: 'Bronze Medal'}));
+        if (!localStorage.getItem('maxEntries')) localStorage.setItem('maxEntries', 10);
+
+        const users = JSON.parse(localStorage.getItem('users'));
+        const admins = JSON.parse(localStorage.getItem('admins'));
+        const maxEntries = parseInt(localStorage.getItem('maxEntries'));
+
+        // Show Sign In Form
+        document.getElementById('showSignIn').addEventListener('click', () => {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('signinForm').classList.remove('hidden');
+        });
+
+        // Signup Form Submit
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (password.length !== 4 || isNaN(password)) return alert('Password must be 4 digits.');
+
+            if (users.find(u => u.email === email)) return alert('User already exists. Please sign in.');
+
+            if (users.length >= maxEntries) return alert('Entry limit reached. Contact admin.');
+
+            const uniqueCode = Math.floor(100000 + Math.random() * 900000);
+            const newUser = {name, email, password, uniqueCode, score: 0, attempts: 0, correct: 0, wrong: 0, percentage: 0, prize: ''};
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            const isAdmin = admins.find(a => a.email === email && a.password === password);
+            if (isAdmin) {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'welcome.html';
+            }
+        });
+
+        // Signin Form Submit
+        document.getElementById('signinForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            const user = users.find(u => u.email === email && u.password === password);
+            const admin = admins.find(a => a.email === email && a.password === password);
+
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = 'welcome.html';
+            } else if (admin) {
+                localStorage.setItem('currentUser', JSON.stringify(admin));
+                window.location.href = 'admin.html';
+            } else {
+                alert('Invalid credentials.');
+            }
+        });
+    </script>
+    <script>
+    const backgrounds = [
+        'bg-gradient-to-br from-blue-200 to-purple-300',
+        'bg-gradient-to-br from-green-200 to-blue-300',
+        'bg-gradient-to-br from-yellow-100 to-pink-200',
+        'bg-gradient-to-br from-purple-200 to-red-300',
+        'bg-gradient-to-br from-teal-200 to-indigo-300'
+    ];
+    const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+    document.getElementById('body').className = randomBg + ' min-h-screen p-6';
+</script>
+</body>
+</html>

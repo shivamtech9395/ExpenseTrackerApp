@@ -1,5 +1,5 @@
 
-/* script.js */
+/* script.js 
 const expenseForm = document.getElementById('expense-form');
 const expenseList = document.getElementById('expense-list');
 const totalAmount = document.getElementById('total-amount');
@@ -78,4 +78,4 @@ filterCategory.addEventListener('change', () => {
     renderExpenses(filterCategory.value);
 });
 
-renderExpenses();
+renderExpenses(); */

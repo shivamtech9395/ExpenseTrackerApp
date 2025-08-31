@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Teacher's Day Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-purple-200 to-blue-300 min-h-screen p-6">
+    <nav class="bg-white p-4 shadow-lg rounded-lg mb-6 animate__animated animate__fadeInDown">
+        <ul class="flex space-x-6 justify-center">
+            <li><a href="profile.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Profile</a></li>
+            <li><a href="dashboard.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Dashboard</a></li>
+            <li><a href="contest.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Contest</a></li>
+            <li><button onclick="logout()" class="text-red-600 font-semibold hover:text-red-800 transition transform hover:scale-110">Logout</button></li>
+        </ul>
+    </nav>
+    <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-lg mx-auto animate__animated animate__zoomIn">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-6">Teacher's Profile</h1>
+        <div class="space-y-4">
+            <p class="text-lg"><strong>Name:</strong> <span id="name" class="text-gray-700"></span></p>
+            <p class="text-lg"><strong>Email:</strong> <span id="email" class="text-gray-700"></span></p>
+            <p class="text-lg"><strong>Unique Code:</strong> <span id="uniqueCode" class="text-gray-700"></span></p>
+            <p class="text-lg"><strong>Password:</strong> <span id="password" class="blur-sm text-gray-700">****</span> <button id="togglePassword" class="text-blue-600 text-sm hover:underline">Show</button></p>
+        </div>
+        <div class="mt-6">
+            <h2 class="text-xl font-semibold text-blue-600 mb-2">Why We Celebrate Teachers</h2>
+            <p class="text-gray-600 italic">"Teachers are the gardeners of young minds, nurturing them with knowledge, wisdom, and compassion. On this Teacher's Day, we honor your dedication to shaping the future."</p>
+            <p class="text-gray-600 mt-2">"Your lessons go beyond the classroom, inspiring us to dream big and achieve greatness."</p>
+        </div>
+        <div class="mt-6 flex justify-center">
+            <img src="images.jpeg" alt="Teacher Icon" class="rounded-full shadow-lg transform hover:scale-110 transition">
+        </div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        document.getElementById('name').textContent = currentUser.name;
+        document.getElementById('email').textContent = currentUser.email;
+        document.getElementById('uniqueCode').textContent = currentUser.uniqueCode;
+
+        const passwordSpan = document.getElementById('password');
+        passwordSpan.textContent = currentUser.password;
+        const toggleBtn = document.getElementById('togglePassword');
+        toggleBtn.addEventListener('click', () => {
+            if (passwordSpan.classList.contains('blur-sm')) {
+                passwordSpan.classList.remove('blur-sm');
+                toggleBtn.textContent = 'Hide';
+            } else {
+                passwordSpan.classList.add('blur-sm');
+                toggleBtn.textContent = 'Show';
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

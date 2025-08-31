@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contest - Teacher's Day Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-green-200 to-blue-300 min-h-screen p-6">
+    <nav class="bg-white p-4 shadow-lg rounded-lg mb-6 animate__animated animate__fadeInDown">
+        <ul class="flex space-x-6 justify-center">
+            <li><a href="profile.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Profile</a></li>
+            <li><a href="dashboard.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Dashboard</a></li>
+            <li><a href="contest.html" class="text-blue-600 font-semibold hover:text-blue-800 transition transform hover:scale-110">Contest</a></li>
+            <li><button onclick="logout()" class="text-red-600 font-semibold hover:text-red-800 transition transform hover:scale-110">Logout</button></li>
+        </ul>
+    </nav>
+    <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-lg mx-auto animate__animated animate__zoomIn">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-6">Contest Time! 🎯</h1>
+        <button id="startContest" class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition transform hover:scale-105 animate__animated animate__pulse animate__infinite">Start Contest</button>
+        <div id="quiz" class="hidden">
+            <p id="timer" class="text-red-600 text-lg font-semibold mb-4 animate__animated animate__flash">Time left: 60s</p>
+            <p id="question" class="text-lg font-semibold mb-4"></p>
+            <form id="optionsForm" class="space-y-4"></form>
+            <button id="nextBtn" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105 mt-6">Next</button>
+        </div>
+        <div id="results" class="hidden mt-6">
+            <h2 class="text-xl font-semibold text-blue-600 mb-4 animate__animated animate__bounceIn">Your Results 🏆</h2>
+            <div id="answers" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'login.html';
+
+        const users = JSON.parse(localStorage.getItem('users'));
+        const userIndex = users.findIndex(u => u.email === currentUser.email);
+        const user = users[userIndex];
+
+        if (user.score > 0) {
+            alert('You have already attempted the contest.');
+            window.location.href = 'dashboard.html';
+        }
+
+        const questions = [
+            {question: "If A is B’s brother and B is C’s sister, how is C related to A?", options: ["Brother", "Sister", "Friend", "Cousin"], answer: "Sister"},
+            {question: "If the day after tomorrow is Wednesday, what day is it today?", options: ["Monday", "Tuesday", "Sunday", "Friday"], answer: "Monday"},
+            {question: "Which number comes next in the sequence: 2, 4, 8, 16, ?", options: ["32", "24", "30", "28"], answer: "32"},
+            {question: "If all cats are animals, and some animals are dogs, are some cats dogs?", options: ["Yes", "No", "Maybe", "Always"], answer: "No"},
+            {question: "If 3 pencils cost 15 rupees, how much do 5 pencils cost?", options: ["20", "25", "30", "15"], answer: "25"},
+            {question: "Which is the odd one out: Apple, Banana, Carrot, Mango?", options: ["Apple", "Banana", "Carrot", "Mango"], answer: "Carrot"},
+            {question: "If today is Monday, what day is it after 10 days?", options: ["Thursday", "Wednesday", "Tuesday", "Friday"], answer: "Thursday"},
+            {question: "If 2 + 3 = 10, 4 + 5 = 18, what is 6 + 7?", options: ["20", "26", "13", "19"], answer: "26"},
+            {question: "Find the missing number: 1, 4, 9, 16, ?", options: ["25", "20", "18", "22"], answer: "25"},
+            {question: "If pen is to write, then knife is to?", options: ["Cut", "Eat", "Draw", "Clean"], answer: "Cut"},
+            {question: "Which animal is different: Tiger, Lion, Bear, Cheetah?", options: ["Tiger", "Lion", "Bear", "Cheetah"], answer: "Bear"},
+            {question: "If 5 books cost 100 rupees, how much do 3 books cost?", options: ["60", "50", "70", "80"], answer: "60"},
+            {question: "What comes next: 1, 3, 6, 10, ?", options: ["12", "15", "14", "16"], answer: "15"},
+            {question: "If all roses are flowers, and some flowers are red, are some roses red?", options: ["Yes", "No", "Maybe", "Always"], answer: "Maybe"},
+            {question: "If yesterday was Tuesday, what day is tomorrow?", options: ["Tuesday", "Wednesday", "Thursday", "Monday"], answer: "Thursday"},
+            {question: "Find the odd one out: 4, 9, 16, 25, 28", options: ["4", "9", "16", "28"], answer: "28"},
+            {question: "If 2 kg of apples cost 80 rupees, how much do 5 kg cost?", options: ["200", "180", "160", "220"], answer: "200"},
+            {question: "Which is different: Circle, Square, Triangle, Cube?", options: ["Circle", "Square", "Triangle", "Cube"], answer: "Cube"},
+            {question: "What is the next number: 5, 10, 20, 40, ?", options: ["80", "60", "70", "50"], answer: "80"},
+            {question: "If book is to read, then spoon is to?", options: ["Eat", "Write", "Cut", "Draw"], answer: "Eat"},
+            {question: "If 3 chairs cost 90 rupees, how much do 7 chairs cost?", options: ["210", "200", "180", "220"], answer: "210"},
+            {question: "Which is the odd one out: Red, Blue, Green, Table?", options: ["Red", "Blue", "Green", "Table"], answer: "Table"},
+            {question: "If today is Friday, what day was it two days ago?", options: ["Tuesday", "Wednesday", "Thursday", "Monday"], answer: "Wednesday"},
+            {question: "Find the next number: 3, 6, 12, 24, ?", options: ["48", "36", "42", "50"], answer: "48"},
+            {question: "If all birds fly, and some birds are sparrows, do all sparrows fly?", options: ["Yes", "No", "Maybe", "Never"], answer: "Yes"},
+            {question: "If 4 mangoes cost 60 rupees, how much do 6 mangoes cost?", options: ["80", "90", "100", "70"], answer: "90"},
+            {question: "Which is different: Dog, Cat, Horse, Car?", options: ["Dog", "Cat", "Horse", "Car"], answer: "Car"},
+            {question: "What comes next: 2, 5, 11, 20, ?", options: ["30", "32", "35", "28"], answer: "32"},
+            {question: "If pencil is to paper, then brush is to?", options: ["Canvas", "Book", "Table", "Wall"], answer: "Canvas"},
+            {question: "If 2 shirts cost 400 rupees, how much do 5 shirts cost?", options: ["1000", "800", "900", "1200"], answer: "1000"},
+            {question: "Which is the odd one out: 1, 8, 27, 64, 125, 130?", options: ["1", "8", "27", "130"], answer: "130"},
+            {question: "If tomorrow is Thursday, what day is today?", options: ["Tuesday", "Wednesday", "Monday", "Friday"], answer: "Wednesday"},
+            {question: "Find the next number: 7, 14, 28, 56, ?", options: ["112", "100", "120", "90"], answer: "112"},
+            {question: "If all fish swim, and some fish are goldfish, do all goldfish swim?", options: ["Yes", "No", "Maybe", "Never"], answer: "Yes"},
+            {question: "If 6 eggs cost 36 rupees, how much do 10 eggs cost?", options: ["60", "50", "70", "48"], answer: "60"},
+            {question: "Which is different: Sun, Moon, Star, Cloud?", options: ["Sun", "Moon", "Star", "Cloud"], answer: "Cloud"},
+            {question: "What comes next: 4, 8, 16, 32, ?", options: ["64", "60", "50", "48"], answer: "64"},
+            {question: "If chalk is to blackboard, then pen is to?", options: ["Paper", "Board", "Wall", "Book"], answer: "Paper"},
+            {question: "If 3 notebooks cost 120 rupees, how much do 4 notebooks cost?", options: ["160", "140", "150", "180"], answer: "160"},
+            {question: "Which is the odd one out: Chair, Table, Sofa, Lamp?", options: ["Chair", "Table", "Sofa", "Lamp"], answer: "Lamp"},
+            {question: "What is the next number: 1, 2, 4, 7, 11, ?", options: ["16", "18", "15", "20"], answer: "16"},
+            {question: "If all trees have leaves, and some trees are oaks, do all oaks have leaves?", options: ["Yes", "No", "Maybe", "Never"], answer: "Yes"},
+            {question: "If 5 pens cost 50 rupees, how much do 8 pens cost?", options: ["80", "70", "90", "100"], answer: "80"},
+            {question: "Which is different: Rose, Lily, Tulip, Carrot?", options: ["Rose", "Lily", "Tulip", "Carrot"], answer: "Carrot"},
+            {question: "What comes next: 10, 20, 40, 80, ?", options: ["160", "150", "140", "120"], answer: "160"},
+            {question: "If knife is to cut, then scissors is to?", options: ["Cut", "Write", "Draw", "Paint"], answer: "Cut"},
+            {question: "If 2 umbrellas cost 200 rupees, how much do 3 umbrellas cost?", options: ["300", "250", "280", "320"], answer: "300"},
+            {question: "Which is the odd one out: 2, 4, 6, 8, 9?", options: ["2", "4", "6", "9"], answer: "9"},
+            {question: "If today is Sunday, what day is it after 15 days?", options: ["Monday", "Tuesday", "Wednesday", "Friday"], answer: "Monday"},
+            {question: "Find the next number: 6, 12, 24, 48, ?", options: ["96", "90", "80", "100"], answer: "96"}
+        ];
+
+        let selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+        let currentQuestion = 0;
+        let answers = [];
+        let timerInterval;
+        let timeLeft = 60;
+
+        document.getElementById('startContest').addEventListener('click', () => {
+            document.getElementById('startContest').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            loadQuestion();
+        });
+
+        function loadQuestion() {
+            if (currentQuestion >= 5) {
+                endContest();
+                return;
+            }
+            timeLeft = 60;
+            document.getElementById('timer').textContent = `Time left: ${timeLeft}s`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    answers.push({question: selectedQuestions[currentQuestion].question, selected: null, correct: selectedQuestions[currentQuestion].answer});
+                    currentQuestion++;
+                    loadQuestion();
+                }
+            }, 1000);
+
+            document.getElementById('question').textContent = selectedQuestions[currentQuestion].question;
+            const form = document.getElementById('optionsForm');
+            form.innerHTML = '';
+            selectedQuestions[currentQuestion].options.forEach(opt => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="radio" name="option" value="${opt}" class="mr-2"><span class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">${opt}</span><br>`;
+                form.appendChild(label);
+            });
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            clearInterval(timerInterval);
+            const selected = document.querySelector('input[name="option"]:checked');
+            answers.push({question: selectedQuestions[currentQuestion].question, selected: selected ? selected.value : null, correct: selectedQuestions[currentQuestion].answer});
+            currentQuestion++;
+            loadQuestion();
+        });
+
+        function endContest() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            const answersDiv = document.getElementById('answers');
+            let correct = 0;
+            answers.forEach(ans => {
+                const p = document.createElement('p');
+                p.innerHTML = `${ans.question} - Your answer: ${ans.selected || 'None'} <span class="font-semibold">(${ans.selected === ans.correct ? '✅ Correct' : '❌ Wrong: ' + ans.correct})</span>`;
+                p.classList.add('p-2', 'rounded-lg', ans.selected === ans.correct ? 'bg-green-100' : 'bg-red-100');
+                if (ans.selected === ans.correct) correct++;
+                answersDiv.appendChild(p);
+            });
+
+            user.attempts = 5;
+            user.correct = correct;
+            user.wrong = 5 - correct;
+            user.score = correct;
+            user.percentage = (correct / 5 * 100).toFixed(2);
+            users[userIndex] = user;
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

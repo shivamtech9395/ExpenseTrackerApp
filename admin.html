@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Teacher's Day Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-purple-200 to-blue-300 min-h-screen p-6">
+    <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-4xl mx-auto animate__animated animate__zoomIn">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-6">Admin Panel</h1>
+        <button onclick="logout()" class="bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition transform hover:scale-105 mb-6">Logout</button>
+        
+        <h2 class="text-xl font-semibold text-blue-600 mb-4">User List</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full border rounded-lg bg-gray-100">
+                <thead>
+                    <tr class="bg-blue-600 text-white">
+                        <th class="p-3">Name</th>
+                        <th class="p-3">Email</th>
+                        <th class="p-3">Score</th>
+                        <th class="p-3">Prize</th>
+                        <th class="p-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable" class="text-gray-700"></tbody>
+            </table>
+        </div>
+        
+        <h2 class="text-xl font-semibold text-blue-600 mt-8 mb-4">Set Prizes</h2>
+        <form id="prizeForm" class="space-y-4 mb-8">
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-gray-700 font-semibold">1st Prize</label>
+                    <input type="text" id="first" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-semibold">2nd Prize</label>
+                    <input type="text" id="second" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-semibold">3rd Prize</label>
+                    <input type="text" id="third" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">Save Prizes</button>
+        </form>
+        
+        <h2 class="text-xl font-semibold text-blue-600 mb-4">Set Entry Limit</h2>
+        <form id="limitForm" class="space-y-4">
+            <div>
+                <label class="block text-gray-700 font-semibold">Max Entries</label>
+                <input type="number" id="maxEntries" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition transform hover:scale-105">Save Limit</button>
+        </form>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || !JSON.parse(localStorage.getItem('admins')).find(a => a.email === currentUser.email)) window.location.href = 'login.html';
+
+        const users = JSON.parse(localStorage.getItem('users'));
+        const prizes = JSON.parse(localStorage.getItem('prizes'));
+        document.getElementById('first').value = prizes.first;
+        document.getElementById('second').value = prizes.second;
+        document.getElementById('third').value = prizes.third;
+        document.getElementById('maxEntries').value = localStorage.getItem('maxEntries');
+
+        function loadUsers() {
+            const table = document.getElementById('userTable');
+            table.innerHTML = '';
+            users.forEach((user, index) => {
+                let prize = '';
+                if (user.score === 5) prize = prizes.first;
+                else if (user.score === 4) prize = prizes.second;
+                else if (user.score >= 3) prize = prizes.third;
+                if (user.prize !== prize) {
+                    user.prize = prize;
+                    users[index] = user;
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3">${user.name}</td>
+                    <td class="p-3">${user.email}</td>
+                    <td class="p-3">${user.score}</td>
+                    <td class="p-3">${user.prize}</td>
+                    <td class="p-3"><button onclick="deleteUser(${index})" class="text-red-600 hover:text-red-800 transition">Delete</button></td>
+                `;
+                tr.classList.add('hover:bg-gray-200', 'transition');
+                table.appendChild(tr);
+            });
+        }
+        loadUsers();
+
+        document.getElementById('prizeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPrizes = {
+                first: document.getElementById('first').value,
+                second: document.getElementById('second').value,
+                third: document.getElementById('third').value
+            };
+            localStorage.setItem('prizes', JSON.stringify(newPrizes));
+            alert('Prizes updated.');
+            loadUsers();
+        });
+
+        document.getElementById('limitForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            localStorage.setItem('maxEntries', document.getElementById('maxEntries').value);
+            alert('Entry limit updated.');
+        });
+
+        window.deleteUser = function(index) {
+            users.splice(index, 1);
+            localStorage.setItem('users', JSON.stringify(users));
+            loadUsers();
+        };
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
